@@ -31,6 +31,15 @@ ActiveRecord::Schema.define(version: 2020_03_06_205904) do
     t.integer "rushing_fumbles"
     t.index ["longest_rush"], name: "index_player_statistics_on_longest_rush"
     t.index ["player_id"], name: "index_player_statistics_on_player_id"
+    t.index ["rushing_20_plus"], name: "index_player_statistics_on_rushing_20_plus"
+    t.index ["rushing_40_plus"], name: "index_player_statistics_on_rushing_40_plus"
+    t.index ["rushing_attempts"], name: "index_player_statistics_on_rushing_attempts"
+    t.index ["rushing_attempts_per_game"], name: "index_player_statistics_on_rushing_attempts_per_game"
+    t.index ["rushing_first_down_pct"], name: "index_player_statistics_on_rushing_first_down_pct"
+    t.index ["rushing_first_downs"], name: "index_player_statistics_on_rushing_first_downs"
+    t.index ["rushing_fumbles"], name: "index_player_statistics_on_rushing_fumbles"
+    t.index ["rushing_yards_per_attempt"], name: "index_player_statistics_on_rushing_yards_per_attempt"
+    t.index ["rushing_yards_per_game"], name: "index_player_statistics_on_rushing_yards_per_game"
     t.index ["total_rushing_touchdowns"], name: "index_player_statistics_on_total_rushing_touchdowns"
     t.index ["total_rushing_yards"], name: "index_player_statistics_on_total_rushing_yards"
   end
@@ -39,6 +48,7 @@ ActiveRecord::Schema.define(version: 2020_03_06_205904) do
     t.string "name"
     t.string "team"
     t.string "position"
+    t.index ["name"], name: "index_players_on_name"
   end
 
 end
