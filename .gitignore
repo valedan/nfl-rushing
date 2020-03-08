@@ -23,3 +23,5 @@
 
 # Frontend
 /frontend/node_modules
+/frontend/yarn-error.log
+.DS_Store
