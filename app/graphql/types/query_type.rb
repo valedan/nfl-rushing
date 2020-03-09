@@ -3,6 +3,7 @@ module Types
 
     field :players, [PlayerType], null: true do
       description "Get a list of players"
+      argument :sortBy, SortBy, required: false
     end
 
     field :player, PlayerType, null: true do
@@ -10,8 +11,9 @@ module Types
       argument :id, ID, required: true
     end
   
-    def players
-      Player.all
+    def players(sortBy: nil)
+      Player.joins(:stats)
+            .order("player_statistics.#{sortBy.field.underscore} #{sortBy.order}")
     end
 
     def player(id:)

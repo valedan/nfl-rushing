@@ -4,26 +4,25 @@ import Paper from "@material-ui/core/Paper";
 import { useQuery } from "@apollo/react-hooks";
 import { GET_PLAYERS } from "../../queries/player";
 import { StatsTableHead } from "./StatsTableHead";
+import { StatsTableBody } from "./StatsTableBody";
 import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
-import TableRow from "@material-ui/core/TableRow";
 
 export const Stats = () => {
-  const { loading, error, data, refetch } = useQuery(GET_PLAYERS);
-  const [order, setOrder] = useState("asc");
+  const [order, setOrder] = useState("DESC");
   const [orderBy, setOrderBy] = useState("rushingAttempts");
+  const { loading, error, data, refetch } = useQuery(GET_PLAYERS, {
+    variables: { sortBy: { field: orderBy, order } }
+  });
 
   const handleRequestSort = (_, property) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
+    const isDesc = orderBy === property && order === "DESC";
+    setOrder(isDesc ? "ASC" : "DESC");
     setOrderBy(property);
   };
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
-  console.log(data);
   return (
     <Wrapper>
       <Paper>
@@ -34,36 +33,7 @@ export const Stats = () => {
               orderBy={orderBy}
               onRequestSort={handleRequestSort}
             />
-            <TableBody>
-              {data.players.map((row, index) => {
-                return (
-                  <TableRow hover key={row.name}>
-                    <TableCell
-                      component="th"
-                      id={`tr-${index}`}
-                      scope="row"
-                      padding="none"
-                    >
-                      {row.name}
-                    </TableCell>
-                    <TableCell>{row.team}</TableCell>
-                    <TableCell>{row.position}</TableCell>
-                    <TableCell>{row.stats.rushingAttempts}</TableCell>
-                    <TableCell>{row.stats.rushingAttemptsPerGame}</TableCell>
-                    <TableCell>{row.stats.totalRushingYards}</TableCell>
-                    <TableCell>{row.stats.rushingYardsPerAttempt}</TableCell>
-                    <TableCell>{row.stats.rushingYardsPerGame}</TableCell>
-                    <TableCell>{row.stats.totalRushingTouchdowns}</TableCell>
-                    <TableCell>{row.stats.longestRush}</TableCell>
-                    <TableCell>{row.stats.rushingFirstDowns}</TableCell>
-                    <TableCell>{row.stats.rushingFirstDownPct}</TableCell>
-                    <TableCell>{row.stats.rushing20Plus}</TableCell>
-                    <TableCell>{row.stats.rushing40Plus}</TableCell>
-                    <TableCell>{row.stats.rushingFumbles}</TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
+            <StatsTableBody data={data} />
           </Table>
         </TableContainer>
       </Paper>

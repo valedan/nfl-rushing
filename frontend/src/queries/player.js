@@ -1,8 +1,8 @@
 import { gql } from "apollo-boost";
 
 export const GET_PLAYERS = gql`
-  {
-    players {
+  query($sortBy: SortBy) {
+    players(sortBy: $sortBy) {
       id
       name
       team

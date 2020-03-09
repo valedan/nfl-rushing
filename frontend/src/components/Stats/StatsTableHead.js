@@ -7,7 +7,7 @@ import TableSortLabel from "@material-ui/core/TableSortLabel";
 
 export const StatsTableHead = ({ order, orderBy, onRequestSort }) => {
   const headCells = [
-    { label: "Player", sortable: true, id: "name" },
+    { label: "Player", sortable: false, id: "name" },
     { label: "Team", sortable: false, id: "team" },
     { label: "Pos", sortable: false, id: "position" },
     { label: "Att", sortable: true, id: "rushingAttempts" },
@@ -29,7 +29,7 @@ export const StatsTableHead = ({ order, orderBy, onRequestSort }) => {
       return (
         <TableSortLabel
           active={orderBy === cell.id}
-          direction={orderBy === cell.id ? order : "asc"}
+          direction={orderBy === cell.id ? order : "DESC"}
           onClick={event => onRequestSort(event, cell.id)}
         >
           {cell.label}
