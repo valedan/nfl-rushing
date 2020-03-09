@@ -7,5 +7,6 @@ module Types
     field :position, String, null: true
     field :stats, Types::PlayerStatisticType, null: true,
       description: "This player's statistics"
+
   end
 end

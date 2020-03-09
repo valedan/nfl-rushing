@@ -7,9 +7,9 @@ import TableBody from "@material-ui/core/TableBody";
 export const StatsTableBody = ({ data }) => {
   return (
     <TableBody>
-      {data.players.map((row, index) => {
+      {data.map((row, index) => {
         return (
-          <TableRow hover key={row.name}>
+          <TableRow key={row.name}>
             <TableCell
               component="th"
               id={`tr-${index}`}

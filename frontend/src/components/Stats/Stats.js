@@ -5,20 +5,32 @@ import { useQuery } from "@apollo/react-hooks";
 import { GET_PLAYERS } from "../../queries/player";
 import { StatsTableHead } from "./StatsTableHead";
 import { StatsTableBody } from "./StatsTableBody";
+import TablePagination from "@material-ui/core/TablePagination";
 import Table from "@material-ui/core/Table";
 import TableContainer from "@material-ui/core/TableContainer";
 
 export const Stats = () => {
   const [order, setOrder] = useState("DESC");
   const [orderBy, setOrderBy] = useState("rushingAttempts");
-  const { loading, error, data, refetch } = useQuery(GET_PLAYERS, {
-    variables: { sortBy: { field: orderBy, order } }
+  const [page, setPage] = useState(0);
+  const rowsPerPage = 15;
+  const { loading, error, data } = useQuery(GET_PLAYERS, {
+    variables: {
+      sortBy: { field: orderBy, order },
+      limit: rowsPerPage,
+      offset: page * rowsPerPage
+    }
   });
 
   const handleRequestSort = (_, property) => {
     const isDesc = orderBy === property && order === "DESC";
     setOrder(isDesc ? "ASC" : "DESC");
     setOrderBy(property);
+    setPage(0);
+  };
+
+  const handleChangePage = (_, newPage) => {
+    setPage(newPage);
   };
 
   if (loading) return <p>Loading...</p>;
@@ -33,8 +45,17 @@ export const Stats = () => {
               orderBy={orderBy}
               onRequestSort={handleRequestSort}
             />
-            <StatsTableBody data={data} />
+            <StatsTableBody data={data.players.nodes} />
           </Table>
+          {/* TODO: Use a custom actions component to add first/last page buttons */}
+          <TablePagination
+            rowsPerPageOptions={[rowsPerPage]}
+            component="div"
+            count={data.players.totalCount}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onChangePage={handleChangePage}
+          />
         </TableContainer>
       </Paper>
     </Wrapper>

@@ -6,10 +6,13 @@ describe "Players API" do
       query_string = <<-GRAPHQL
         query{
           players {
-            name
-            id
-            stats{
-              rushingAttempts
+            totalCount
+            nodes {
+              name
+              id
+              stats{
+                rushingAttempts
+              }
             }
           }
         }
@@ -18,8 +21,8 @@ describe "Players API" do
       players = create_list(:player, 5)
       PlayerStatistic.update_all(rushing_attempts: 10)
       result = Schema.execute(query_string)
-  
-      player_result = result["data"]["players"]
+
+      player_result = result["data"]["players"]["nodes"]
       expect(players.map{|player| player.id.to_s})
         .to match_array player_result.map{|player| player["id"]}
   
@@ -42,29 +45,63 @@ describe "Players API" do
       query_string = <<-GRAPHQL
         query($sortBy: SortBy){
           players(sortBy: $sortBy) {
-            name
-            id
-            stats {
-              rushingAttempts
+            nodes {
+              name
+              id
+              stats {
+                rushingAttempts
+              }
             }
           }
         }
       GRAPHQL
 
-      sortedResult = Schema.execute(
+      sorted_result = Schema.execute(
         query_string, 
         variables: { sortBy: { field: "rushingAttempts", order: "ASC"} }
       )
-      reversedResult = Schema.execute(
+      reversed_result = Schema.execute(
         query_string, 
         variables: { sortBy: { field: "rushingAttempts", order: "DESC"} }
       )
 
-      expect(sortedResult["data"]["players"].map{|player| player["name"]})
+      sorted_data = sorted_result["data"]["players"]["nodes"]
+      reversed_data = reversed_result["data"]["players"]["nodes"]
+      expect(sorted_data.map{|player| player["name"]})
         .to eq data.sort_by{ |player| player["Att"] }.map{|player| player["Player"]}
 
-      expect(reversedResult["data"]["players"].map{|player| player["name"]})
+      expect(reversed_data.map{|player| player["name"]})
         .to eq data.sort_by{ |player| player["Att"] }.reverse.map{|player| player["Player"]}
+    end
+
+    it "allows paginated queries" do
+      data = [
+        { "Player" => "Joe Banyard", "Att" => 2 },
+        { "Player" => "Shaun Hill", "Att" => 5 },
+        { "Player" => "Breshad Perriman", "Att" => 1 },
+        { "Player" => "Charlie Whitehurst", "Att" => 3 }
+      ]
+      PlayerDataImporter.call(data)
+
+      query_string = <<-GRAPHQL
+        query($limit: Int, $offset: Int){
+          players(limit: $limit, offset: $offset) {
+              totalCount
+              nodes {
+                name
+                id
+                stats {
+                  rushingAttempts
+                }
+              }
+          }
+        }
+      GRAPHQL
+
+      result = Schema.execute(query_string, variables: { limit: 2, offset: 2 })
+      expect(result["data"]["players"]["totalCount"]).to eq 4
+      expect(result["data"]["players"]["nodes"].map{|player| player["name"]})
+        .to eq data.last(2).map{|player| player["Player"]}
     end
   end
 

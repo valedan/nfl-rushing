@@ -1,9 +1,11 @@
 module Types
   class QueryType < Types::BaseObject
 
-    field :players, [PlayerType], null: true do
+    field :players, PlayerType.connection_type, null: true do
       description "Get a list of players"
       argument :sortBy, SortBy, required: false
+      argument :limit, Int, required: false
+      argument :offset, Int, required: false
     end
 
     field :player, PlayerType, null: true do
@@ -11,9 +13,8 @@ module Types
       argument :id, ID, required: true
     end
   
-    def players(sortBy: nil)
-      Player.joins(:stats)
-            .order("player_statistics.#{sortBy.field.underscore} #{sortBy.order}")
+    def players(**args)
+      PlayerQuery.call(context, args)
     end
 
     def player(id:)
