@@ -1,6 +1,7 @@
 require "rails_helper"
 
 describe "Players API" do
+  # TODO: Now that the query logic has been moved from the GraphQL query class to the PlayerQuery service object, consider moving/refactoring these tests.
   describe "Players query" do
     it "fetches a list of all players" do
       query_string = <<-GRAPHQL
@@ -102,6 +103,33 @@ describe "Players API" do
       expect(result["data"]["players"]["totalCount"]).to eq 4
       expect(result["data"]["players"]["nodes"].map{|player| player["name"]})
         .to eq data.last(2).map{|player| player["Player"]}
+    end
+
+    it "allows filtering by player name" do
+      data = [
+        { "Player" => "Joe Banyard", "Att" => 2 },
+        { "Player" => "Shaun Hill", "Att" => 5 },
+        { "Player" => "Breshad Perriman", "Att" => 1 },
+        { "Player" => "Joe Whitehurst", "Att" => 3 }
+      ]
+
+      PlayerDataImporter.call(data)
+
+      query_string = <<-GRAPHQL
+        query($nameFilter: String){
+          players(nameFilter: $nameFilter) {
+              totalCount
+              nodes {
+                name
+              }
+          }
+        }
+      GRAPHQL
+
+      result = Schema.execute(query_string, variables: { nameFilter: "joe" })
+      expect(result["data"]["players"]["totalCount"]).to eq 2
+      expect(result["data"]["players"]["nodes"].map{|player| player["name"]})
+        .to eq ["Joe Banyard", "Joe Whitehurst"]
     end
   end
 

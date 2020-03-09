@@ -4,6 +4,7 @@ module Types
     field :players, PlayerType.connection_type, null: true do
       description "Get a list of players"
       argument :sortBy, SortBy, required: false
+      argument :nameFilter, String, required: false
       argument :limit, Int, required: false
       argument :offset, Int, required: false
     end

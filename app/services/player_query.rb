@@ -6,6 +6,7 @@ class PlayerQuery < ApplicationService
   end
 
   def call
+    apply_filters
     apply_sort
     set_total_count
     apply_pagination
@@ -13,6 +14,12 @@ class PlayerQuery < ApplicationService
   end
 
   private
+
+  def apply_filters
+    if @args[:nameFilter].present?
+      @query = @query.where("name ILIKE '#{@args[:nameFilter]}%'")
+    end
+  end
 
   def apply_sort
     if @args[:sortBy].present?
