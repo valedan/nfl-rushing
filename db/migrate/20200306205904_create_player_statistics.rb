@@ -8,7 +8,8 @@ class CreatePlayerStatistics < ActiveRecord::Migration[6.0]
       t.float :rushing_yards_per_attempt, index: true
       t.float :rushing_yards_per_game, index: true
       t.integer :total_rushing_touchdowns, index: true
-      t.string :longest_rush, index: true
+      t.integer :longest_rush_distance, index: true
+      t.boolean :longest_rush_touchdown
       t.integer :rushing_first_downs, index: true
       t.float :rushing_first_down_pct, index: true
       t.integer :rushing_20_plus, index: true
