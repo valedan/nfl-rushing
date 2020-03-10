@@ -15,7 +15,8 @@ module Types
     end
   
     def players(**args)
-      PlayerQuery.call(context, args)
+      args[:context] = context
+      PlayerQuery.call(args)
     end
 
     def player(id:)

@@ -1,8 +1,7 @@
 class PlayerQuery < ApplicationService
-  def initialize(context, **args)
+  def initialize(**args)
     @args = args
-    @context = context
-    @query = Player.joins(:stats)
+    @query = Player.includes(:stats)
   end
 
   def call
@@ -31,7 +30,9 @@ class PlayerQuery < ApplicationService
 
   def set_total_count
     # Need to count players that match the filters before we apply pagination
-    @context[:total_query_count] = @query.count
+    if @args[:context]
+      @args[:context][:total_query_count] = @query.count
+    end
   end
 
   def apply_pagination

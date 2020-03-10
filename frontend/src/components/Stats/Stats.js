@@ -14,6 +14,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
 import TableContainer from "@material-ui/core/TableContainer";
 import ClearIcon from "@material-ui/icons/Clear";
+import GetAppIcon from "@material-ui/icons/GetApp";
 
 export const Stats = () => {
   const [order, setOrder] = useState("DESC");
@@ -89,6 +90,13 @@ export const Stats = () => {
                 )
               }}
             />
+            <form method="post" action="/players/export">
+              <input hidden type="text" name="order" value={order} />
+              <input hidden type="text" name="orderBy" value={orderBy} />
+              <input hidden type="text" name="nameInput" value={nameInput} />
+
+              <IconButton type="submit">{<GetAppIcon />}</IconButton>
+            </form>
           </Toolbar>
           {tableContent()}
           {/* TODO: Use a custom actions component to add first/last page buttons */}
