@@ -7,9 +7,14 @@ import IconButton from "@material-ui/core/IconButton";
 import ClearIcon from "@material-ui/icons/Clear";
 import GetAppIcon from "@material-ui/icons/GetApp";
 
-export const StatsTableToolbar = ({ nameFilter, handleChangeName }) => {
+export const StatsTableToolbar = ({
+  nameFilter,
+  handleChangeName,
+  order,
+  orderBy
+}) => {
   return (
-    <Toolbar>
+    <StyledToolbar>
       <TextField
         variant="outlined"
         value={nameFilter}
@@ -19,7 +24,7 @@ export const StatsTableToolbar = ({ nameFilter, handleChangeName }) => {
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton onClick={() => handleChangeName("")}>
+              <IconButton size="small" onClick={() => handleChangeName("")}>
                 {<ClearIcon />}
               </IconButton>
             </InputAdornment>
@@ -29,10 +34,15 @@ export const StatsTableToolbar = ({ nameFilter, handleChangeName }) => {
       <form method="post" action="/players/export">
         <input hidden type="text" name="order" value={order} />
         <input hidden type="text" name="orderBy" value={orderBy} />
-        <input hidden type="text" name="nameFilter" value={nameInput} />
+        <input hidden type="text" name="nameFilter" value={nameFilter} />
 
         <IconButton type="submit">{<GetAppIcon />}</IconButton>
       </form>
-    </Toolbar>
+    </StyledToolbar>
   );
 };
+
+const StyledToolbar = styled(Toolbar)`
+  display: flex;
+  justify-content: space-between;
+`;

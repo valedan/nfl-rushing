@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import Paper from "@material-ui/core/Paper";
 import { useQuery } from "@apollo/react-hooks";
 import { GET_PLAYERS } from "../../queries/player";
 import { StatsTableHead } from "./StatsTableHead";
 import { StatsTableBody } from "./StatsTableBody";
+import { StatsTableToolbar } from "./StatsTableToolbar";
 import TablePagination from "@material-ui/core/TablePagination";
 import Table from "@material-ui/core/Table";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import TableContainer from "@material-ui/core/TableContainer";
-import StatsTableToolbar from "./StatsTableToolbar";
 
 export const Stats = () => {
   const [order, setOrder] = useState("DESC");
@@ -41,34 +40,24 @@ export const Stats = () => {
     setNameFilter(newFilter);
   };
 
-  const tableContent = () => {
-    if (loading) {
-      return <CircularProgress />;
-    } else if (error) {
-      return <p>Error :(</p>;
-    } else {
-      return (
-        <Table size="medium">
-          <StatsTableHead
-            order={order}
-            orderBy={orderBy}
-            onRequestSort={handleRequestSort}
-          />
-          <StatsTableBody data={data.players.nodes} />
-        </Table>
-      );
-    }
-  };
-
   return (
     <Wrapper>
-      <Paper>
+      <Paper elevation={4}>
         <TableContainer>
           <StatsTableToolbar
             nameFilter={nameFilter}
             handleChangeName={handleChangeName}
+            order={order}
+            orderBy={orderBy}
           />
-          {tableContent()}
+          <Table size="medium">
+            <StatsTableHead
+              order={order}
+              orderBy={orderBy}
+              onRequestSort={handleRequestSort}
+            />
+            <StatsTableBody data={data} loading={loading} error={error} />
+          </Table>
           {/* TODO: Use a custom actions component to add first/last page buttons */}
           <TablePagination
             rowsPerPageOptions={[rowsPerPage]}
@@ -85,5 +74,7 @@ export const Stats = () => {
 };
 
 const Wrapper = styled.div`
-  color: blue;
+  width: 95%;
+  margin: auto;
+  margin-top: 4%;
 `;

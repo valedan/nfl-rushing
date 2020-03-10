@@ -3,21 +3,19 @@ import styled from "styled-components";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
-export const StatsTableBody = ({ data }) => {
-  return (
-    <TableBody>
-      {data.map((row, index) => {
+export const StatsTableBody = ({ data, loading, error }) => {
+  const tableContent = () => {
+    if (loading) {
+      return <CircularProgress />;
+    } else if (error) {
+      return <p>Error :(</p>;
+    } else {
+      return data.players.nodes.map(row => {
         return (
           <TableRow key={row.name}>
-            <TableCell
-              component="th"
-              id={`tr-${index}`}
-              scope="row"
-              padding="none"
-            >
-              {row.name}
-            </TableCell>
+            <TableCell>{row.name}</TableCell>
             <TableCell>{row.team}</TableCell>
             <TableCell>{row.position}</TableCell>
             <TableCell>{row.stats.rushingAttempts}</TableCell>
@@ -34,7 +32,9 @@ export const StatsTableBody = ({ data }) => {
             <TableCell>{row.stats.rushingFumbles}</TableCell>
           </TableRow>
         );
-      })}
-    </TableBody>
-  );
+      });
+    }
+  };
+
+  return <TableBody>{tableContent()}</TableBody>;
 };
