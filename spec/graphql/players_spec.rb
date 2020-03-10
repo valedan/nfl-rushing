@@ -10,7 +10,6 @@ describe "Players API" do
             totalCount
             nodes {
               name
-              id
               stats{
                 rushingAttempts
               }
@@ -24,10 +23,7 @@ describe "Players API" do
       result = Schema.execute(query_string)
 
       player_result = result["data"]["players"]["nodes"]
-      expect(players.map{|player| player.id.to_s})
-        .to match_array player_result.map{|player| player["id"]}
-  
-      expect(players.map{|player| player.name})
+      expect(players.pluck(:name))
         .to match_array player_result.map{|player| player["name"]}
   
       expect(PlayerStatistic.all.pluck(:rushing_attempts))
@@ -48,7 +44,6 @@ describe "Players API" do
           players(sortBy: $sortBy) {
             nodes {
               name
-              id
               stats {
                 rushingAttempts
               }
@@ -68,11 +63,12 @@ describe "Players API" do
 
       sorted_data = sorted_result["data"]["players"]["nodes"]
       reversed_data = reversed_result["data"]["players"]["nodes"]
-      expect(sorted_data.map{|player| player["name"]})
-        .to eq data.sort_by{ |player| player["Att"] }.map{|player| player["Player"]}
 
-      expect(reversed_data.map{|player| player["name"]})
-        .to eq data.sort_by{ |player| player["Att"] }.reverse.map{|player| player["Player"]}
+      expect(sorted_data.map{ |player| player["name"] })
+        .to eq data.sort_by{ |player| player["Att"] }.map{ |player| player["Player"] }
+
+      expect(reversed_data.map{ |player| player["name"]} )
+        .to eq data.sort_by{ |player| player["Att"] }.reverse.map{ |player| player["Player"] }
     end
 
     it "allows paginated queries" do
@@ -90,18 +86,15 @@ describe "Players API" do
               totalCount
               nodes {
                 name
-                id
-                stats {
-                  rushingAttempts
-                }
               }
           }
         }
       GRAPHQL
 
       result = Schema.execute(query_string, variables: { limit: 2, offset: 2 })
+
       expect(result["data"]["players"]["totalCount"]).to eq 4
-      expect(result["data"]["players"]["nodes"].map{|player| player["name"]})
+      expect(result["data"]["players"]["nodes"].map{ |player| player["name"] })
         .to eq data.last(2).map{|player| player["Player"]}
     end
 
@@ -127,8 +120,9 @@ describe "Players API" do
       GRAPHQL
 
       result = Schema.execute(query_string, variables: { nameFilter: "joe" })
+
       expect(result["data"]["players"]["totalCount"]).to eq 2
-      expect(result["data"]["players"]["nodes"].map{|player| player["name"]})
+      expect(result["data"]["players"]["nodes"].map{ |player| player["name"] })
         .to eq ["Joe Banyard", "Joe Whitehurst"]
     end
   end
@@ -152,6 +146,7 @@ describe "Players API" do
       result = Schema.execute(query_string, variables: { id: player.id })
   
       player_result = result["data"]["player"]
+      
       expect(player.id.to_s).to eq player_result["id"]
       expect(player.name).to eq player_result["name"]
       expect(player.stats.rushing_attempts)
