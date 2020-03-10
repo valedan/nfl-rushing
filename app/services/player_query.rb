@@ -22,10 +22,22 @@ class PlayerQuery < ApplicationService
 
   def apply_sort
     if @args[:sortBy].present?
-      field = @args[:sortBy].field.underscore
-      field = "longest_rush_distance" if field == "longest_rush"
+      field = parse_sort_field(@args[:sortBy].field)
+
       order = @args[:sortBy].order
       @query = @query.order("player_statistics.#{field} #{order}")
+    end
+  end
+
+  def parse_sort_field(field)
+    if field == "longestRush"
+      "longest_rush_distance"
+    elsif field == "rushing20Plus"
+      "rushing_20_plus"
+    elsif field == "rushing40Plus"
+      "rushing_40_plus"
+    else
+      field.underscore
     end
   end
 
